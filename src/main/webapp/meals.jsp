@@ -22,9 +22,9 @@
     <jsp:useBean id="meals" scope="request" type="java.util.List"/>
     <c:forEach items="${meals}" var="meal">
         <tr style="color: ${meal.excess ? "red" : "green"}">
-            <td><c:out value="${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}"/></td>
-            <td><c:out value="${meal.description}"/></td>
-            <td><c:out value="${meal.calories}"/></td>
+            <td>${meal.date} ${meal.time}</td>
+            <td>${meal.description}</td>
+            <td>${meal.calories}</td>
             <td>
                 <a href="meals?action=edit&id=${meal.id}">Edit</a>
                 <a href="meals?action=delete&id=${meal.id}">Delete</a>
