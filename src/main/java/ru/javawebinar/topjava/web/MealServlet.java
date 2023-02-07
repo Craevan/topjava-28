@@ -1,7 +1,7 @@
 package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
-import ru.javawebinar.topjava.dao.InMemoryDao;
+import ru.javawebinar.topjava.dao.InMemoryMealDao;
 import ru.javawebinar.topjava.dao.MealDao;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.MealsUtil;
@@ -19,31 +19,41 @@ import java.time.temporal.ChronoUnit;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealServlet extends HttpServlet {
-    private static final Logger log = getLogger(UserServlet.class);
-    private static final MealDao dataBase = new InMemoryDao();
+    private static final Logger log = getLogger(MealServlet.class);
+    private MealDao dataBase;
+
+    @Override
+    public void init() {
+        dataBase = new InMemoryMealDao();
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-        if (action == null) {
-            log.info("Get all meals");
-            request.setAttribute("meals", MealsUtil.filteredByStreams(
-                    dataBase.getAll(),
-                    LocalTime.MIN,
-                    LocalTime.MAX,
-                    MealsUtil.DEFAULT_CALORIES_COUNT));
-            request.getRequestDispatcher("/meals.jsp").forward(request, response);
-        } else if ("create".equals(action) || "edit".equals(action)) {
-            Meal meal = "create".equals(action) ?
-                    new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", MealsUtil.DEFAULT_CALORIES_COUNT) :
-                    dataBase.getById(Integer.parseInt(request.getParameter("id")));
-            log.info("Create/Update {}", meal);
-            request.setAttribute("meal", meal);
-            request.getRequestDispatcher("/edit_meal.jsp").forward(request, response);
-        } else if ("delete".equals(action)) {
-            log.info("Delete meal with id = {}", request.getParameter("id"));
-            dataBase.delete(Integer.parseInt(request.getParameter("id")));
-            response.sendRedirect("meals");
+        switch (action == null ? "" : action) {
+            case ("create"):
+            case ("edit"):
+                Meal meal = "create".equals(action) ?
+                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", MealsUtil.DEFAULT_CALORIES_COUNT) :
+                        dataBase.getById(getId(request.getParameter("id")));
+                log.info("Create/Update {}", meal);
+                request.setAttribute("meal", meal);
+                request.getRequestDispatcher("/editMeal.jsp").forward(request, response);
+                break;
+            case("delete"):
+                log.info("Delete meal with id = {}", request.getParameter("id"));
+                dataBase.delete(getId(request.getParameter("id")));
+                response.sendRedirect("meals");
+                break;
+            default:
+                log.info("Get all meals");
+                request.setAttribute("meals", MealsUtil.filteredByStreams(
+                        dataBase.getAll(),
+                        LocalTime.MIN,
+                        LocalTime.MAX,
+                        MealsUtil.DEFAULT_CALORIES_COUNT));
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                break;
         }
     }
 
@@ -59,10 +69,14 @@ public class MealServlet extends HttpServlet {
             log.info("Create {}", meal);
             dataBase.add(meal);
         } else {
-            Meal meal = new Meal(Integer.parseInt(id), ldt, description, calories);
+            Meal meal = new Meal(getId(id), ldt, description, calories);
             log.info("Update {}", meal);
             dataBase.update(meal);
         }
         response.sendRedirect("meals");
+    }
+
+    private int getId(final String param) {
+        return Integer.parseInt(param);
     }
 }
