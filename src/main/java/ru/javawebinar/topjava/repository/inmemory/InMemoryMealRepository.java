@@ -57,25 +57,21 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getAll(int userId) {
-        final Map<Integer, Meal> mealMap = repository.get(userId);
-        return CollectionUtils.isEmpty(mealMap) ? Collections.emptyList() :
-                filteredByPredicate(userId, meal -> true);
+        return filteredByPredicate(userId, meal -> true);
     }
 
     @Override
     public List<Meal> getFiltered(final LocalDate start, final LocalDate end, final int userId) {
-        final Map<Integer, Meal> mealMap = repository.get(userId);
-        return CollectionUtils.isEmpty(mealMap) ? Collections.emptyList() :
-                filteredByPredicate(userId, meal -> DateTimeUtil.isInside(meal.getDate(), start, end));
-
+        return filteredByPredicate(userId, meal -> DateTimeUtil.isInside(meal.getDate(), start, end));
     }
 
     private List<Meal> filteredByPredicate(final int userId, Predicate<Meal> filter) {
         final Map<Integer, Meal> mealMap = repository.get(userId);
-        return mealMap.values()
-                .stream()
-                .filter(filter)
-                .sorted(Comparator.comparing(Meal::getDateTime).reversed())
-                .collect(Collectors.toList());
+        return CollectionUtils.isEmpty(mealMap) ? Collections.emptyList() :
+                mealMap.values()
+                        .stream()
+                        .filter(filter)
+                        .sorted(Comparator.comparing(Meal::getDateTime).reversed())
+                        .collect(Collectors.toList());
     }
 }
