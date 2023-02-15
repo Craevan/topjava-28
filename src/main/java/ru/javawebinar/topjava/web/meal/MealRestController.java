@@ -32,7 +32,7 @@ public class MealRestController {
 
     public List<MealTo> getAll() {
         final int userId = SecurityUtil.authUserId();
-        logger.info("user with ID = {} geting all meals", userId);
+        logger.info("user with ID = {} getting all meals", userId);
         return MealsUtil.getTos(service.getAll(userId), SecurityUtil.authUserCaloriesPerDay());
     }
 
