@@ -6,9 +6,15 @@
 <body>
 <h3>Проект <a href="https://github.com/JavaWebinar/topjava" target="_blank">Java Enterprise (Topjava)</a></h3>
 <hr>
-<ul style="font-size: large">
-    <li><a href="users">Users</a></li>
-    <li><a href="meals">Meals</a></li>
-</ul>
+<form method="post" action="users">
+    Choose your role:
+    <label>
+        <select name="id">
+            <option value="0">Admin</option>
+            <option value="1">User</option>
+        </select>
+    </label>
+    <button type="submit">LogIn</button>
+</form>
 </body>
 </html>
