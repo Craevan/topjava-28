@@ -3,7 +3,7 @@ package ru.javawebinar.topjava.repository;
 import ru.javawebinar.topjava.model.Meal;
 
 import java.time.LocalDate;
-import java.util.Collection;
+import java.util.List;
 
 public interface MealRepository {
     // null if updated meal does not belong to userId
@@ -16,7 +16,7 @@ public interface MealRepository {
     Meal get(final int id, final int userId);
 
     // ORDERED dateTime desc
-    Collection<Meal> getAll(final int userId);
+    List<Meal> getAll(final int userId);
 
-    Collection<Meal> getFiltered(final LocalDate start, final LocalDate end, final int userId);
+    List<Meal> getFiltered(final LocalDate start, final LocalDate end, final int userId);
 }
