@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.repository.inmemory;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.DateTimeUtil;
@@ -9,9 +10,11 @@ import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Repository
@@ -21,7 +24,11 @@ public class InMemoryMealRepository implements MealRepository {
 
     {
         MealsUtil.meals.forEach(meal -> save(meal, InMemoryUserRepository.USER_ID));
-        save(new Meal(LocalDateTime.now(), "TEST RECORD", SecurityUtil.authUserCaloriesPerDay()), InMemoryUserRepository.ADMIN_ID);
+        save(new Meal(
+                LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES),
+                "TEST RECORD",
+                SecurityUtil.authUserCaloriesPerDay()
+        ), InMemoryUserRepository.ADMIN_ID);
     }
 
     @Override
@@ -49,26 +56,26 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public Collection<Meal> getAll(int userId) {
+    public List<Meal> getAll(int userId) {
         final Map<Integer, Meal> mealMap = repository.get(userId);
-        if (mealMap == null || mealMap.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return mealMap.values()
-                .stream()
-                .sorted(Comparator.comparing(Meal::getDateTime).reversed())
-                .collect(Collectors.toList());
+        return CollectionUtils.isEmpty(mealMap) ? Collections.emptyList() :
+                filteredByPredicate(userId, meal -> true);
     }
 
     @Override
-    public Collection<Meal> getFiltered(final LocalDate start, final LocalDate end, final int userId) {
+    public List<Meal> getFiltered(final LocalDate start, final LocalDate end, final int userId) {
         final Map<Integer, Meal> mealMap = repository.get(userId);
-        if (mealMap == null || mealMap.isEmpty()) {
-            return Collections.emptyList();
-        }
+        return CollectionUtils.isEmpty(mealMap) ? Collections.emptyList() :
+                filteredByPredicate(userId, meal -> DateTimeUtil.isInside(meal.getDate(), start, end));
+
+    }
+
+    private List<Meal> filteredByPredicate(final int userId, Predicate<Meal> filter) {
+        final Map<Integer, Meal> mealMap = repository.get(userId);
         return mealMap.values()
                 .stream()
-                .filter(meal -> DateTimeUtil.isInside(meal.getDate(), start, end))
+                .filter(filter)
+                .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                 .collect(Collectors.toList());
     }
 }
