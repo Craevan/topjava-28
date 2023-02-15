@@ -5,6 +5,7 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,7 +21,7 @@ public class InMemoryMealRepository implements MealRepository {
 
     {
         MealsUtil.meals.forEach(meal -> save(meal, InMemoryUserRepository.USER_ID));
-        save(new Meal(LocalDateTime.now(), "TEST RECORD", MealsUtil.DEFAULT_CALORIES_PER_DAY), InMemoryUserRepository.ADMIN_ID);
+        save(new Meal(LocalDateTime.now(), "TEST RECORD", SecurityUtil.authUserCaloriesPerDay()), InMemoryUserRepository.ADMIN_ID);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class MealRestController {
     public List<MealTo> getAll() {
         final int userId = SecurityUtil.authUserId();
         logger.info("user with ID = {} geting all meals", userId);
-        return MealsUtil.getTos(service.getAll(userId), MealsUtil.DEFAULT_CALORIES_PER_DAY);
+        return MealsUtil.getTos(service.getAll(userId), SecurityUtil.authUserCaloriesPerDay());
     }
 
     public Meal create(final Meal meal) {
@@ -61,6 +61,6 @@ public class MealRestController {
         final int userId = SecurityUtil.authUserId();
         logger.info("user with ID = {} getting filtered by date {} - {} and time {} - {}", userId, startDate, endDate, startTime, endTime);
         List<Meal> meals = service.getFiltered(startDate, endDate, userId);
-        return MealsUtil.getFilteredTos(meals, MealsUtil.DEFAULT_CALORIES_PER_DAY, startTime, endTime);
+        return MealsUtil.getFilteredTos(meals, SecurityUtil.authUserCaloriesPerDay(), startTime, endTime);
     }
 }
