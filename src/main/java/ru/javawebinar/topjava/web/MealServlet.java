@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.web;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletException;
@@ -89,10 +90,10 @@ public class MealServlet extends HttpServlet {
     }
 
     private LocalDate parseDate(final String param) {
-        return param.isEmpty() ? LocalDate.now() : LocalDate.parse(param);
+        return DateTimeUtil.parseLocalDate(param);
     }
 
     private LocalTime parseTime(final String param) {
-        return param.isEmpty() ? LocalTime.now() : LocalTime.parse(param);
+        return DateTimeUtil.parseLocalTime(param);
     }
 }
