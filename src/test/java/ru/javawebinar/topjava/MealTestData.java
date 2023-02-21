@@ -12,6 +12,7 @@ import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 public class MealTestData {
     public static final int FIRST_USER_MEAL_ID = START_SEQ + 3;
     public static final int FIRST_ADMIN_MEAL_ID = FIRST_USER_MEAL_ID + 7;
+    public static final int NON_EXISTING_MEAL_ID = 1;
 
     public static final Meal userMeal1 = new Meal(FIRST_USER_MEAL_ID, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500);
     public static final Meal userMeal2 = new Meal(FIRST_USER_MEAL_ID + 1, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000);
@@ -23,8 +24,6 @@ public class MealTestData {
 
     public static final Meal adminMeal1 = new Meal(FIRST_ADMIN_MEAL_ID, LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 600);
     public static final Meal adminMeal2 = new Meal(FIRST_ADMIN_MEAL_ID + 1, LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 1000);
-
-    public static final Meal nonExistingMeal = new Meal(1, LocalDateTime.now(), "NonExistingMeal", 0);
 
     public static void assertMatch(Meal actual, Meal expected) {
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected);

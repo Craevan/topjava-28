@@ -77,7 +77,7 @@ public class MealServiceTest {
 
     @Test
     public void getNonExistingMeal() {
-        assertThrows(NotFoundException.class, () -> service.get(UserTestData.NOT_FOUND, UserTestData.USER_ID));
+        assertThrows(NotFoundException.class, () -> service.get(MealTestData.NON_EXISTING_MEAL_ID, UserTestData.USER_ID));
     }
 
     @Test
@@ -88,6 +88,20 @@ public class MealServiceTest {
                 MealTestData.userMeal3,
                 MealTestData.userMeal2,
                 MealTestData.userMeal1);
+    }
+
+    @Test
+    public void getFilteredWithoutDate() {
+        final List<Meal> expected = Arrays.asList(
+                MealTestData.userMeal7,
+                MealTestData.userMeal6,
+                MealTestData.userMeal5,
+                MealTestData.userMeal4,
+                MealTestData.userMeal3,
+                MealTestData.userMeal2,
+                MealTestData.userMeal1
+        );
+        assertMatch(service.getBetweenInclusive(null, null, UserTestData.USER_ID), expected);
     }
 
     @Test
@@ -114,15 +128,14 @@ public class MealServiceTest {
 
     @Test
     public void deleteNonExistingMeal() {
-        assertThrows(NotFoundException.class, () -> service.update(MealTestData.nonExistingMeal, UserTestData.USER_ID));
+        assertThrows(NotFoundException.class, () -> service.delete(MealTestData.NON_EXISTING_MEAL_ID, UserTestData.USER_ID));
     }
 
     @Test
     public void update() {
         final Meal updated = MealTestData.getUpdated();
         service.update(updated, UserTestData.USER_ID);
-        assertMatch(service.get(MealTestData.userMeal1.getId(), UserTestData.USER_ID), MealTestData.getUpdated());
-
+        assertMatch(service.get(MealTestData.FIRST_USER_MEAL_ID, UserTestData.USER_ID), MealTestData.getUpdated());
     }
 
     @Test
